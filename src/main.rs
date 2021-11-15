@@ -51,7 +51,7 @@ fn main() -> Result<(), Error> {
     terminal.clear()?;
 
     while app.running {
-        terminal.draw(|f| ui(f))?;
+        terminal.draw(|f| ui(f, &app))?;
         listen_keys(&mut app);
     }
 
@@ -59,7 +59,7 @@ fn main() -> Result<(), Error> {
     Ok(())
 }
 
-fn ui<B: Backend>(f: &mut Frame<B>) {
+fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
     let chunks = Layout::default()
         .direction(Direction::Horizontal)
         .margin(1)
@@ -71,7 +71,7 @@ fn ui<B: Backend>(f: &mut Frame<B>) {
         .margin(1)
         .constraints([Constraint::Percentage(20), Constraint::Percentage(80)].as_ref())
         .split(chunks[1]);
-    let paragraph = Paragraph::new("aaa")
+    let paragraph = Paragraph::new(app.current.as_str())
         .alignment(tui::layout::Alignment::Center)
         .wrap(Wrap { trim: true });
     let block = Block::default().title("Block 2").borders(Borders::ALL);
@@ -90,12 +90,12 @@ fn listen_keys(app: &mut App) {
                 return;
             }
             Key::Char('+') => {
-                if app.sink.volume() < 1 {
+                if app.sink.volume() < 1.0 {
                     app.sink.set_volume(app.sink.volume() + 0.1);
                 }
             }
             Key::Char('-') => {
-                if app.sink.volume() > 0 {
+                if app.sink.volume() > 0.0 {
                     app.sink.set_volume(app.sink.volume() - 0.1);
                 }
             }
